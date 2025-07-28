@@ -1,5 +1,5 @@
 ## Imports
-from flask import Flask, render_template, redirect, g, request, url_for
+from flask import Flask, render_template, redirect, g, request, url_for, jsonify
 import sqlite3
 import requests
 
@@ -24,31 +24,35 @@ def get_items():
 
 
 
-#Route for adding things
-@app.route("/add", methods=['POST']) #only if the function is a POST request, then this function will be used to handle that request. /add is not a function...it's just a match to an "action" in HTML.
+@app.route("/api/add", methods=['POST'])
 def add_entry():
-    db = get_db()
-    db.execute('insert into entries (what_to_do, due_date) values (?, ?)',
-               [request.form['what_to_do'], request.form['due_date']])
-    db.commit() #this is making the change in the database
-    return redirect(url_for('show_list')) #this comomand is important
+    data = request.get_json()  # this pulls JSON payload from frontend's requests.post
+    what_to_do = data.get("what_to_do")
+    due_date = data.get("due_date")
+    status = data.get("status", "incomplete")  # fallback default
 
-#Route for deleting things
-@app.route("/delete/<item>")
-def delete_entry(item):
     db = get_db()
-    db.execute("DELETE FROM entries WHERE what_to_do='"+item+"'")
+    db.execute('INSERT INTO entries (what_to_do, due_date, status) VALUES (?, ?, ?)',
+               (what_to_do, due_date, status))
     db.commit()
-    return redirect(url_for('show_list'))
+    return jsonify({"success": True}), 201
+
+# #Route for deleting things
+# @app.route("/delete/<item>")
+# def delete_entry(item):
+#     db = get_db()
+#     db.execute("DELETE FROM entries WHERE what_to_do='"+item+"'")
+#     db.commit()
+#     return redirect(url_for('show_list'))
 
 
-#Route for marking things
-@app.route("/mark/<item>")
-def mark_as_done(item):
-    db = get_db()
-    db.execute("UPDATE entries SET status='done' WHERE what_to_do='"+item+"'")
-    db.commit()
-    return redirect(url_for('show_list'))
+# #Route for marking things
+# @app.route("/mark/<item>")
+# def mark_as_done(item):
+#     db = get_db()
+#     db.execute("UPDATE entries SET status='done' WHERE what_to_do='"+item+"'")
+#     db.commit()
+#     return redirect(url_for('show_list'))
 
 #Database route
 def get_db():
@@ -68,6 +72,6 @@ def close_db(error):
 
 ## Program Instantiation
 if __name__ == "__main__":
-    app.run("0.0.0.0")
+    app.run("0.0.0.0", port=5002, debug=True)
     # app.run("0.0.0.0", port=80)
     # app.run("0.0.0.0", port=5000)
