@@ -49,13 +49,16 @@ def delete_entry():
     return jsonify({"success": True})
 
 
-# #Route for marking things
-# @app.route("/mark/<item>")
-# def mark_as_done(item):
-#     db = get_db()
-#     db.execute("UPDATE entries SET status='done' WHERE what_to_do='"+item+"'")
-#     db.commit()
-#     return redirect(url_for('show_list'))
+# Mark (REFACTORED)
+@app.route("/api/mark_as_done", methods=["POST"])
+def mark_as_done():
+    data = request.get_json()
+    what_to_do = data.get("what_to_do")
+
+    db = get_db()
+    db.execute("UPDATE entries SET status='done' WHERE what_to_do=?", (what_to_do,))
+    db.commit()
+    return jsonify({"success": True})
 
 #Database route
 def get_db():

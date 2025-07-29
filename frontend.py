@@ -11,7 +11,7 @@ app = Flask(__name__) #always needed; makes app work. config method removed as u
 back_end_port = 5002
 
 
-#Route to root (REFACTORED)
+# Root (REFACTORED)
 @app.route("/")
 def show_list():
       resp = requests.get(f"http://localhost:{back_end_port}/api/items") #this may need to be changed
@@ -19,7 +19,7 @@ def show_list():
       return render_template('index.html', todolist=resp)
 
 
-#Route for adding things
+# Add (REFACTORED)
 @app.route("/add", methods=['POST']) #only if the function is a POST request, then this function will be used to handle that request. /add is not a function...it's just a match to an "action" in HTML.
 def add_entry():
     data = {
@@ -31,7 +31,7 @@ def add_entry():
     return redirect(url_for('show_list')) #this comomand is important
 
 
-#Deleting items
+# Delete (REFACTORED)
 @app.route("/delete/<item>")
 def delete_entry(item):
     data = {"what_to_do": item}
@@ -39,39 +39,13 @@ def delete_entry(item):
     return redirect(url_for('show_list'))
 
 
+# Mark (REFACTORED)
+@app.route("/mark/<item>")
+def mark_as_done(item):
+    data = {"what_to_do": item}
+    requests.post(f"http://localhost:{back_end_port}/api/mark_as_done", json=data)
+    return redirect(url_for('show_list'))
 
-# #Route for deleting things
-# @app.route("/delete/<item>")
-# def delete_entry(item):
-#     db = get_db()
-#     db.execute("DELETE FROM entries WHERE what_to_do='"+item+"'")
-#     db.commit()
-#     return redirect(url_for('show_list'))
-
-
-# #Route for marking things
-# @app.route("/mark/<item>")
-# def mark_as_done(item):
-#     db = get_db()
-#     db.execute("UPDATE entries SET status='done' WHERE what_to_do='"+item+"'")
-#     db.commit()
-#     return redirect(url_for('show_list'))
-
-# #Database route
-# def get_db():
-#     """Opens a new database connection if there is none yet for the
-#     current application context.
-#     """
-#     if not hasattr(g, 'sqlite_db'):
-#         g.sqlite_db = sqlite3.connect(app.config['DATABASE'])
-#     return g.sqlite_db
-
-# #Route for error
-# @app.teardown_appcontext #saves memory somehow
-# def close_db(error):
-#     """Closes the database again at the end of the request."""
-#     if hasattr(g, 'sqlite_db'):
-#         g.sqlite_db.close()
 
 ## Program Instantiation
 if __name__ == "__main__":
