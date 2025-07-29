@@ -8,11 +8,13 @@ import requests
 app = Flask(__name__) #always needed; makes app work. config method removed as unecessary
 
 ## Functions and Environment
+back_end_port = 5002
+
 
 #Route to root (REFACTORED)
 @app.route("/")
 def show_list():
-      resp = requests.get("http://localhost:5002/api/items") #this may need to be changed
+      resp = requests.get(f"http://localhost:{back_end_port}/api/items") #this may need to be changed
       resp = resp.json()
       return render_template('index.html', todolist=resp)
 
@@ -25,19 +27,18 @@ def add_entry():
         "due_date": request.form["due_date"],
         "status": request.form.get("status", "incomplete")
     }
-    requests.post("http://localhost:5002/api/add", json=data)
+    requests.post(f"http://localhost:{back_end_port}/api/add", json=data)
     return redirect(url_for('show_list')) #this comomand is important
 
 
+#Deleting items
+@app.route("/delete/<item>")
+def delete_entry(item):
+    data = {"what_to_do": item}
+    requests.post(f"http://localhost:{back_end_port}/api/delete", json=data)
+    return redirect(url_for('show_list'))
 
 
-# @app.route("/add", methods=['POST']) #only if the function is a POST request, then this function will be used to handle that request. /add is not a function...it's just a match to an "action" in HTML.
-# def add_entry():
-#     db = get_db()
-#     db.execute('insert into entries (what_to_do, due_date) values (?, ?)',
-#                [request.form['what_to_do'], request.form['due_date']])
-#     db.commit() #this is making the change in the database
-#     return redirect(url_for('show_list')) #this command is important
 
 # #Route for deleting things
 # @app.route("/delete/<item>")

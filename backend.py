@@ -13,7 +13,7 @@ app.config.from_object(__name__)
 
 ## Functions and Environment
 
-#
+# Root (REFACTORED)
 @app.route("/api/items") 
 def get_items():
     db = get_db()
@@ -23,8 +23,8 @@ def get_items():
     return jsonify(tdlist)
 
 
-
-@app.route("/api/add", methods=['POST'])
+# Add (REFACTORED)
+@app.route("/api/add", methods=["POST"])
 def add_entry():
     data = request.get_json()  # this pulls JSON payload from frontend's requests.post
     what_to_do = data.get("what_to_do")
@@ -32,18 +32,21 @@ def add_entry():
     status = data.get("status", "incomplete")  # fallback default
 
     db = get_db()
-    db.execute('INSERT INTO entries (what_to_do, due_date, status) VALUES (?, ?, ?)',
-               (what_to_do, due_date, status))
+    db.execute("INSERT INTO entries (what_to_do, due_date, status) VALUES (?, ?, ?)", (what_to_do, due_date, status))
     db.commit()
-    return jsonify({"success": True}), 201
+    return jsonify({"success": True})
 
-# #Route for deleting things
-# @app.route("/delete/<item>")
-# def delete_entry(item):
-#     db = get_db()
-#     db.execute("DELETE FROM entries WHERE what_to_do='"+item+"'")
-#     db.commit()
-#     return redirect(url_for('show_list'))
+
+# Delete (REFACTORED)
+@app.route("/api/delete", methods=["POST"])
+def delete_entry():
+    data = request.get_json()
+    what_to_do = data.get("what_to_do")
+
+    db = get_db()
+    db.execute("DELETE FROM entries WHERE what_to_do=?", (what_to_do,))
+    db.commit()
+    return jsonify({"success": True})
 
 
 # #Route for marking things
