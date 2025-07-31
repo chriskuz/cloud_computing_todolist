@@ -2,12 +2,15 @@
 from flask import Flask, render_template, redirect, g, request, url_for, jsonify
 import sqlite3
 import requests
+import os
 
 
 ## Pre-instantiation
 app = Flask(__name__) #always needed; makes app work. config method removed as unecessary
 
 ## Functions and Environment
+BACKEND_BASE_URL = os.getenv("BACKEND_BASE_URL", "http://localhost:5001")
+
 back_end_port = 5002
 
 

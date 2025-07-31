@@ -7,6 +7,13 @@
 - requests
 
 
+# Author notes
+- developed locally the front end and back end api
+- created a new instance on google compute engine for the backend
+- downloaded kubelet engine
+- made a dockerfile and pushed to do0ckerhub
+
+
 # Deploying Locally
 
 To deploy this application locally, you must open two unique 
