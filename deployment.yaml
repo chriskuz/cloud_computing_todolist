@@ -19,7 +19,7 @@ spec:
           containerPort: 80
         env:
           name: BACKEND_BASE_URL
-          value: http:// #need to know the external IP here
+          value: http://34.23.159.237:80 #need to know the external IP here
 
 ---
 apiVersion: v1
