@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-Deployment
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: frontend
+  template: 
+    metadata:
+      labels: 
+        app: frontend
+    spec: 
+      conatiners: 
+        name: frontend
+        image: #dockerusername goes here
+        ports:
+          containerPort: 80
+        env:
+          name: BACKEND_BASE_URL
+          value: http:// #need to know the external IP here
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-Service
+spec: 
+  type: LoadBalancer
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80    
+
